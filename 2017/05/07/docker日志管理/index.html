@@ -1,0 +1,1063 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="docker,日志," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.1" />
+
+
+
+
+
+
+<meta name="description" content="日志管理1.查看容器日志默认情况下, 执行docker logs &amp;lt;CONTAINER ID&amp;gt;可以看到一个容器的输入日志.其中包括STDOUT标准输出和STDERR标准错误输出.但是在有些情况下, 你可能无法查看到一些有用的信息.比如:    如果你在容器中,将文件记录到某个文件,外部服务或者数据库中去.那么信息将无法通过标准输出和标准错误输出进行打印,自然也没法通过docker lo">
+<meta name="keywords" content="docker,日志">
+<meta property="og:type" content="article">
+<meta property="og:title" content="docker日志管理">
+<meta property="og:url" content="http://yoursite.com/2017/05/07/docker日志管理/index.html">
+<meta property="og:site_name" content="abner&#39;s Blog">
+<meta property="og:description" content="日志管理1.查看容器日志默认情况下, 执行docker logs &amp;lt;CONTAINER ID&amp;gt;可以看到一个容器的输入日志.其中包括STDOUT标准输出和STDERR标准错误输出.但是在有些情况下, 你可能无法查看到一些有用的信息.比如:    如果你在容器中,将文件记录到某个文件,外部服务或者数据库中去.那么信息将无法通过标准输出和标准错误输出进行打印,自然也没法通过docker lo">
+<meta property="og:updated_time" content="2017-05-07T06:00:23.652Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="docker日志管理">
+<meta name="twitter:description" content="日志管理1.查看容器日志默认情况下, 执行docker logs &amp;lt;CONTAINER ID&amp;gt;可以看到一个容器的输入日志.其中包括STDOUT标准输出和STDERR标准错误输出.但是在有些情况下, 你可能无法查看到一些有用的信息.比如:    如果你在容器中,将文件记录到某个文件,外部服务或者数据库中去.那么信息将无法通过标准输出和标准错误输出进行打印,自然也没法通过docker lo">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/05/07/docker日志管理/"/>
+
+
+
+
+
+  <title>docker日志管理 | abner's Blog</title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">abner's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/05/07/docker日志管理/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="abner">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="abner's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                docker日志管理
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-05-07T13:26:04+08:00">
+                2017-05-07
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/学习总结/" itemprop="url" rel="index">
+                    <span itemprop="name">学习总结</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/2017/05/07/docker日志管理/" class="leancloud_visitors" data-flag-title="docker日志管理">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数 </span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h4 id="日志管理"><a href="#日志管理" class="headerlink" title="日志管理"></a>日志管理</h4><h5 id="1-查看容器日志"><a href="#1-查看容器日志" class="headerlink" title="1.查看容器日志"></a>1.查看容器日志</h5><p>默认情况下, 执行<code>docker logs &lt;CONTAINER ID&gt;</code>可以看到一个容器的输入日志.其中包括<code>STDOUT</code>标准输出和<code>STDERR</code>标准错误输出.但是在有些情况下, 你可能无法查看到一些有用的信息.比如:  </p>
+<ul>
+<li>如果你在容器中,将文件记录到某个文件,外部服务或者数据库中去.那么信息将无法通过标准输出和标准错误输出进行打印,自然也没法通过<code>docker logs</code>查看到.</li>
+<li>如果你的容器运行着一个非交互式进程(如WEB服务器或者数据库),该应用程序可能会将其输出发送到日志文件中去.</li>
+</ul>
+<p>第一种情况下,你的日志可以通过其他方式进行处理,你可以不选择使用docker的日志模式输出.第二种情况下,一些官方的镜像解决了这个问题,比如nginx的官方镜像把/var/log/nginx/access.log软连接到了<code>/dev/stdout</code>设备上,并且把/var/log/nginx/error.log同时软连接到而来<code>/dev/stderr</code>设备上.官方的httpd服务则直接将标准输出,错误输出写到相应的设备上.</p>
+<a id="more"></a>
+<h5 id="2-配置日志驱动程序"><a href="#2-配置日志驱动程序" class="headerlink" title="2.配置日志驱动程序"></a>2.配置日志驱动程序</h5><p>Docker包含多个记录机制，可帮助您从运行容器和服务中获取信息。这些机制称为日志记录驱动程序。<br>每个Docker守护程序都有一个默认的日志记录驱动程序，每个容器都使用它，除非您将其配置为使用其他日志驱动程序。</p>
+<p>配置docker默认的日志记录驱动程序, 通过<code>--log-driver=&lt;VALUE&gt;</code>,在dockerd启动的使用指定。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#查找Docker守护程序的当前默认日志驱动程序</span></div><div class="line">$ docker info |grep <span class="string">'Logging Driver'</span></div><div class="line">Logging Driver: json-file</div></pre></td></tr></table></figure></p>
+<p>又或者指定某个容器的日志驱动程序，通过<code>--log-driver=&lt;VALUE&gt;</code>来启动容器,通过<code>--log-opt &lt;NAME&gt;=&lt;VALUE&gt;</code>来指定相关参数<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">docker run --log-driver=syslog --log-opt syslog-facility=daemon registry</div><div class="line"><span class="comment">#或者,通过设置进行日志轮转</span></div><div class="line">docker run <span class="_">-d</span> --log-driver=json-file --log-opt max-size=1k --log-opt max-file=5 registry</div></pre></td></tr></table></figure></p>
+<p><strong><em>支持的日志驱动格式如下:</em></strong></p>
+<table>
+<thead>
+<tr>
+<th>驱动</th>
+<th style="text-align:center">解释</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>none</td>
+<td style="text-align:center">容器中不会有日志，docker logs不会返回任何输出。</td>
+</tr>
+<tr>
+<td>json-file</td>
+<td style="text-align:center">日志格式为JSON。Docker的默认日志记录驱动程序。</td>
+</tr>
+<tr>
+<td>syslog</td>
+<td style="text-align:center">将记录消息写入syslog设备。该syslog守护程序必须在主机上运行。</td>
+</tr>
+<tr>
+<td>journald</td>
+<td style="text-align:center">将日志消息写入journald。该journald守护程序必须在主机上运行。</td>
+</tr>
+<tr>
+<td>gelf</td>
+<td style="text-align:center">将日志消息写入Graylog扩展日志格式（GELF）端点，如Graylog或Logstash。</td>
+</tr>
+<tr>
+<td>fluentd</td>
+<td style="text-align:center">将日志消息写入fluentd（正向输入）。该fluentd守护程序必须在主机上运行。</td>
+</tr>
+<tr>
+<td>awslogs</td>
+<td style="text-align:center">将日志消息写入Amazon CloudWatch日志。</td>
+</tr>
+<tr>
+<td>splunk</td>
+<td style="text-align:center">将日志消息写入splunk使用HTTP事件收集器。</td>
+</tr>
+<tr>
+<td>etwlogs</td>
+<td style="text-align:center">将日志消息写入Windows事件跟踪（ETW）事件。仅在Windows平台上可用。</td>
+</tr>
+<tr>
+<td>gcplogs</td>
+<td style="text-align:center">将日志消息写入Google Cloud Platform（GCP）日志记录。</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>docker logs命令不适用于比其他驱动程序json-file 和journald。</p>
+</blockquote>
+<h5 id="3-使用相关的日志驱动"><a href="#3-使用相关的日志驱动" class="headerlink" title="3.使用相关的日志驱动"></a>3.使用相关的日志驱动</h5><p>你可以通过打印日志的时候加入对应标签或者环境变量<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#指定参数运行dockerd进程</span></div><div class="line">$ dockerd \</div><div class="line">         --log-driver=json-file \</div><div class="line">         --log-opt labels=production_status \</div><div class="line">         --log-opt env=os,customer</div><div class="line"></div><div class="line"><span class="comment"># 运行一个镜像,并指定相关标签或环境变量</span></div><div class="line">$ docker run -dit --label production_status=testing <span class="_">-e</span> os=ubuntu alpine sh</div><div class="line"></div><div class="line"><span class="comment"># 查看日志打印,会发现打印了相关信息.</span></div><div class="line"><span class="string">"attrs"</span>:&#123;<span class="string">"production_status"</span>:<span class="string">"testing"</span>,<span class="string">"os"</span>:<span class="string">"ubuntu"</span>&#125;</div></pre></td></tr></table></figure></p>
+<p>所有驱动程序共有的一些选项:</p>
+<blockquote>
+<p>这些选项仅适用于Docker CE Edge版本</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>驱动</th>
+<th style="text-align:center">解释</th>
+<th>示例</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>mode</td>
+<td style="text-align:center">设置日志记录模式，接受的值为blocking（默认）和non-blocking。何时non-blocking设置，如果日志缓冲区填满，日志消息将丢失。如何删除邮件是未定义的。</td>
+<td>–log-opt mode=non-blocking</td>
+</tr>
+<tr>
+<td>max-buffer-size</td>
+<td style="text-align:center">仅适用于mode设置时non-blocking，这将设置日志缓冲区的最大大小。达到此大小后，日志消息将被删除。</td>
+<td>–log-opt max-buffer-size 5m</td>
+</tr>
+</tbody>
+</table>
+<h5 id="4-none引擎"><a href="#4-none引擎" class="headerlink" title="4.none引擎"></a>4.none引擎</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ docker run -it --log-driver none alpine ash</div></pre></td></tr></table></figure>
+<h5 id="5-json-file引擎"><a href="#5-json-file引擎" class="headerlink" title="5.json-file引擎"></a>5.json-file引擎</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ docker run -it --log-opt max-size=10m --log-opt max-file=3 alpine ash</div></pre></td></tr></table></figure>
+<table>
+<thead>
+<tr>
+<th>选项</th>
+<th style="text-align:center">解释</th>
+<th>示例</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>max-size</td>
+<td style="text-align:center">日志在滚动之前的最大大小。一个正整数加上代表测量单位的改性剂（k，m，或g）。</td>
+<td>–log-opt max-size=10m</td>
+</tr>
+<tr>
+<td>max-file</td>
+<td style="text-align:center">可以存在的最大日志文件数。如果滚动日志会创建多余的文件，则删除最旧的文件。只有有效时max-size也设置。正整数。</td>
+<td>–log-opt max-file=3</td>
+</tr>
+<tr>
+<td>labels</td>
+<td style="text-align:center">启动Docker守护程序时适用。这个守护进程将接受的与日志相关的标签的逗号分隔列表。用于高级日志标签选项。</td>
+<td>–log-opt labels=production_status,geo</td>
+</tr>
+<tr>
+<td>env</td>
+<td style="text-align:center">启动Docker守护程序时适用。这个守护进程将接受的与日志相关的环境变量的逗号分隔列表。用于高级日志标签选项。</td>
+<td>–log-opt env=os,customer</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>注意：如果max-size并max-file设置，docker logs则只返回最新日志文件中的日志行。</p>
+</blockquote>
+<h5 id="6-syslog引擎"><a href="#6-syslog引擎" class="headerlink" title="6.syslog引擎"></a>6.syslog引擎</h5><p>发送到远程syslog服务器上<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">$ docker run \</div><div class="line">         --log-driver=syslog \</div><div class="line">         --log-opt syslog-address=tcp://192.168.0.42:123 \</div><div class="line">         --log-opt syslog-facility=daemon \</div><div class="line">         alpine ash</div></pre></td></tr></table></figure></p>
+<p>或者使用TLS加密<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">$ docker run \</div><div class="line">         --log-driver=syslog \</div><div class="line">         --log-opt syslog-address=tcp+tls://192.168.0.42:123 \</div><div class="line">         --log-opt syslog-tls-ca-cert=/etc/ca-certificates/custom/ca.pem \</div><div class="line">         --log-opt syslog-tls-cert=/etc/ca-certificates/custom/cert.pem \</div><div class="line">         --log-opt syslog-tls-key=/etc/ca-certificates/custom/key.pem \</div><div class="line">         alpine ash</div></pre></td></tr></table></figure></p>
+<table>
+<thead>
+<tr>
+<th>选项</th>
+<th style="text-align:center">解释</th>
+<th>示例</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>syslog-address</td>
+<td style="text-align:center">外部syslog服务器的地址。该URI指定符可以是[tcp&#124;udp1&#124;tcp+tls]://host:port，unix://path，或unixgram://path。如果传输是tcp，，udp或者tcp+tls，默认端口是514。    –log-opt syslog-address=tcp+tls://192.168.1.3:514，</td>
+<td>–log-opt syslog-address=unix:///tmp/syslog.sock</td>
+</tr>
+<tr>
+<td>syslog-facility</td>
+<td style="text-align:center">使用的syslog设施。可以是任何有效syslog设施的号码或名称。请参阅syslog文档。</td>
+<td>–log-opt syslog-facility=daemon</td>
+</tr>
+<tr>
+<td>syslog-tls-ca-cert</td>
+<td style="text-align:center">由CA签署的信任证书的绝对路径。如果地址协议没有，则忽略tcp+tls。</td>
+<td>–log-opt syslog-tls-ca-cert=/etc/ca-certificates/custom/ca.pem</td>
+</tr>
+<tr>
+<td>syslog-tls-cert</td>
+<td style="text-align:center">TLS证书文件的绝对路径。如果地址协议没有，则忽略tcp+tls。</td>
+<td>–log-opt syslog-tls-cert=/etc/ca-certificates/custom/cert.pem</td>
+</tr>
+<tr>
+<td>syslog-tls-key</td>
+<td style="text-align:center">TLS密钥文件的绝对路径。如果地址协议没有，则忽略tcp+tls。</td>
+<td>–log-opt syslog-tls-key=/etc/ca-certificates/custom/key.pem</td>
+</tr>
+<tr>
+<td>syslog-tls-skip-verify</td>
+<td style="text-align:center">如果设置为true，则在连接到syslog守护程序时将跳过TLS验证。默认为false。如果地址协议没有，则忽略tcp+tls。</td>
+<td>–log-opt syslog-tls-skip-verify=true</td>
+</tr>
+<tr>
+<td>tag</td>
+<td style="text-align:center">附加到消息APP-NAME中的字符串syslog。默认情况下，Docker使用容器ID的前12个字符标记日志消息。请参阅日志标签选项文档以自定义日志标记格式。</td>
+<td>–log-opt tag=mailer</td>
+</tr>
+<tr>
+<td>syslog-format</td>
+<td style="text-align:center">syslog要使用的消息格式。如果未指定，则使用本地UNIX系统日志格式，而不指定主机名。指定rfc3164RFC-3164兼容格式，rfc5424适用于RFC-5424兼容格式，或rfc5424micro为具有微秒时间戳分辨率的RFC-5424兼容格式指定。</td>
+<td>–log-opt syslog-format=rfc5424micro</td>
+</tr>
+<tr>
+<td>labels</td>
+<td style="text-align:center">启动Docker守护程序时适用。这个守护进程将接受的与日志相关的标签的逗号分隔列表。用于高级日志标签选项。</td>
+<td>–log-opt labels=production_status,geo</td>
+</tr>
+<tr>
+<td>env</td>
+<td style="text-align:center">启动Docker守护程序时适用。这个守护进程将接受的与日志相关的环境变量的逗号分隔列表。用于高级日志标签选项。</td>
+<td>–log-opt env=os,customer</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>其余tag相关的自定义配置, 详见<a href="https://docs.docker.com/engine/admin/logging/log_tags/" target="_blank" rel="external">日志驱动程序的标记</a>,以及其余<strong>日志记录引擎</strong>的详细配置可以参考官网<a href="https://docs.docker.com/engine/admin/logging/logentries/" target="_blank" rel="external">日志记录引擎详解</a>.</p>
+</blockquote>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/docker/" rel="tag"># docker</a>
+          
+            <a href="/tags/日志/" rel="tag"># 日志</a>
+          
+        </div>
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/05/07/docker管理员手册/" rel="next" title="docker管理员手册">
+                <i class="fa fa-chevron-left"></i> docker管理员手册
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/logo.jpg"
+               alt="abner" />
+          <p class="site-author-name" itemprop="name">abner</p>
+           
+              <p class="site-description motion-element" itemprop="description">扎实的运维体系知识+过硬的开发技能+英语=去Google SRE部门上班,目前=None.</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">5</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">1</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">7</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://abner-w.github.io/" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              友情链接
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://qq.com/" title="腾讯" target="_blank">腾讯</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#日志管理"><span class="nav-number">1.</span> <span class="nav-text">日志管理</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#1-查看容器日志"><span class="nav-number">1.1.</span> <span class="nav-text">1.查看容器日志</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#2-配置日志驱动程序"><span class="nav-number">1.2.</span> <span class="nav-text">2.配置日志驱动程序</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#3-使用相关的日志驱动"><span class="nav-number">1.3.</span> <span class="nav-text">3.使用相关的日志驱动</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#4-none引擎"><span class="nav-number">1.4.</span> <span class="nav-text">4.none引擎</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#5-json-file引擎"><span class="nav-number">1.5.</span> <span class="nav-text">5.json-file引擎</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#6-syslog引擎"><span class="nav-number">1.6.</span> <span class="nav-text">6.syslog引擎</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">abner</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.1"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
+  <script>AV.initialize("HC5p6mwpMQcOuIe1UvpdEMTl-gzGzoHsz", "yKJAFyHQTgowmSO4I1zkwhCw");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

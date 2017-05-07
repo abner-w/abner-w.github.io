@@ -90,17 +90,17 @@
 
 
 
-<meta name="description" content="###利用celery实现异步ssh任务  以下内容适用于有一定flask和celery基础的同学,如果还不知道他们是什么,请戳这里 Flask中文文档 以及 celery 以及 flask-celery.  直奔主题,先看个最简单的例子,12345678910111213141516171819202122232425import paramikofrom app import celery@c">
+<meta name="description" content="利用celery实现异步ssh任务 以下内容适用于有一定flask和celery基础的同学,如果还不知道他们是什么,请戳这里 Flask中文文档 以及 celery 以及 flask-celery.  直奔主题,先看个最简单的例子,12345678910111213141516171819202122232425import paramikofrom app import celery@celer">
 <meta name="keywords" content="flask,celery">
 <meta property="og:type" content="article">
 <meta property="og:title" content="flask利用flask-celery实现异步任务">
 <meta property="og:url" content="http://yoursite.com/2017/03/18/flask-celery/index.html">
 <meta property="og:site_name" content="abner&#39;s Blog">
-<meta property="og:description" content="###利用celery实现异步ssh任务  以下内容适用于有一定flask和celery基础的同学,如果还不知道他们是什么,请戳这里 Flask中文文档 以及 celery 以及 flask-celery.  直奔主题,先看个最简单的例子,12345678910111213141516171819202122232425import paramikofrom app import celery@c">
-<meta property="og:updated_time" content="2017-04-30T14:22:30.129Z">
+<meta property="og:description" content="利用celery实现异步ssh任务 以下内容适用于有一定flask和celery基础的同学,如果还不知道他们是什么,请戳这里 Flask中文文档 以及 celery 以及 flask-celery.  直奔主题,先看个最简单的例子,12345678910111213141516171819202122232425import paramikofrom app import celery@celer">
+<meta property="og:updated_time" content="2017-05-07T05:44:12.152Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="flask利用flask-celery实现异步任务">
-<meta name="twitter:description" content="###利用celery实现异步ssh任务  以下内容适用于有一定flask和celery基础的同学,如果还不知道他们是什么,请戳这里 Flask中文文档 以及 celery 以及 flask-celery.  直奔主题,先看个最简单的例子,12345678910111213141516171819202122232425import paramikofrom app import celery@c">
+<meta name="twitter:description" content="利用celery实现异步ssh任务 以下内容适用于有一定flask和celery基础的同学,如果还不知道他们是什么,请戳这里 Flask中文文档 以及 celery 以及 flask-celery.  直奔主题,先看个最简单的例子,12345678910111213141516171819202122232425import paramikofrom app import celery@celer">
 
 
 
@@ -367,16 +367,14 @@
       
 
       
-        <p>###利用celery实现异步ssh任务</p>
-<blockquote>
+        <h3 id="利用celery实现异步ssh任务"><a href="#利用celery实现异步ssh任务" class="headerlink" title="利用celery实现异步ssh任务"></a>利用celery实现异步ssh任务</h3><blockquote>
 <p>以下内容适用于有一定flask和celery基础的同学,如果还不知道他们是什么,请戳这里 <a href="http://docs.jinkan.org/docs/flask/" target="_blank" rel="external">Flask中文文档</a> 以及 <a href="http://docs.jinkan.org/docs/celery/" target="_blank" rel="external">celery</a> 以及 <a href="http://www.pythondoc.com/flask-celery/first.html" target="_blank" rel="external">flask-celery</a>.</p>
 </blockquote>
 <p>直奔主题,先看个最简单的例子,<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> paramiko</div><div class="line"><span class="keyword">from</span> app <span class="keyword">import</span> celery</div><div class="line"></div><div class="line"><span class="meta">@celery.task() #: 通过celery.task来把某个函数修饰成异步任务</span></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">run_base_ssh_task</span><span class="params">(ip, cmd, user=<span class="string">'root'</span>, password=<span class="string">'root'</span>)</span>:</span></div><div class="line">    <span class="string">'''通过paramiko库远程SSH连接某台主机,执行命令,返回结果'''</span></div><div class="line">    <span class="keyword">try</span>:</div><div class="line">        ssh = paramiko.SSHClient() <span class="comment">#: 创建对象</span></div><div class="line">        ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy()) <span class="comment">#: 允许连接不在know_hosts文件中的主机</span></div><div class="line">        ssh.connect(ipaddr, <span class="number">22</span>, user, password) <span class="comment">#: 通过指定 IP,端口,用户名,密码 进行连接</span></div><div class="line">        stdin, stdout, stderr = ssh.exec_command(cmd) <span class="comment">#: 执行SSH命令</span></div><div class="line">        result_status = stdout.channel.recv_exit_status() <span class="comment">#: 获取$?的值</span></div><div class="line">        <span class="keyword">return</span> &#123;</div><div class="line">            <span class="string">'result'</span>: <span class="keyword">True</span> <span class="keyword">if</span> result_status == <span class="number">0</span> <span class="keyword">else</span> <span class="keyword">False</span>, <span class="comment">#: 如果 $? == 0 ,则表示执行成功</span></div><div class="line">            <span class="comment">#: 返回标准输出和错误输出内容</span></div><div class="line">            <span class="string">'detail'</span>: <span class="string">"##### 标准输出 #####\n%s##### 错误输出 #####\n%s"</span> % \</div><div class="line">                      (stdout.read().decode(), stderr.read().decode())</div><div class="line">            &#125;</div><div class="line"></div><div class="line">    <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</div><div class="line">        <span class="comment">#: 返回false,并返回异常信息</span></div><div class="line">        <span class="keyword">return</span> &#123;</div><div class="line">            <span class="string">'result'</span>: <span class="keyword">False</span>,</div><div class="line">            <span class="string">'detail'</span>: str(e),</div><div class="line">            &#125;</div></pre></td></tr></table></figure></p>
 <a id="more"></a>
 <p>通过以下代码就可以把你想执行的SSH任务丢进任务队列,让消费者去执行即可.<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">ip = <span class="string">'192.168.1.100'</span> <span class="comment">#: 主机IP地址</span></div><div class="line">cmd = <span class="string">'hostname'</span> <span class="comment">#: 输出主机名</span></div><div class="line"><span class="comment">#: 利用apply_async函数异步执行任务</span></div><div class="line">run_base_ssh_task.apply_async(args=[ip, cmd])</div></pre></td></tr></table></figure></p>
 <hr>
-<p>####<strong><em>那么问题来了!!! 打印出来的结果,我该去哪里查看?</em></strong></p>
-<p>在你什么都没有做的情况下,你只能从:<br>1.你的celery日志里面可以看到, 以下是我打印出来的日志.<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">[2017-03-18 18:58:35,511: INFO/PoolWorker-2] Connected (version 2.0, client OpenSSH_5.3)</div><div class="line">[2017-03-18 18:58:35,859: INFO/PoolWorker-2] Authentication (publickey) failed.</div><div class="line">[2017-03-18 18:58:35,946: INFO/PoolWorker-2] Authentication (publickey) failed.</div><div class="line">[2017-03-18 18:58:36,078: INFO/PoolWorker-2] Authentication (password) successful!</div><div class="line">[2017-03-18 18:58:36,251: WARNING/PoolWorker-2] True</div><div class="line">[2017-03-18 18:58:36,252: WARNING/PoolWorker-2] <span class="comment">##### 标准输出 #####</span></div><div class="line">centos138</div><div class="line"><span class="comment">##### 错误输出 #####</span></div><div class="line">[2017-03-18 18:58:36,266: INFO/PoolWorker-2] Task app.vmctl.models.run_base_ssh_task[2ce5bcde-437d-4adb-be5a-74bedd5bea06] succeeded <span class="keyword">in</span> 0.8271931620001851s: &#123;<span class="string">'detail'</span>: <span class="string">'##### 标准输出 #####</span></div><div class="line">centos138</div><div class="line">##### 错误输出 #####</div><div class="line">', <span class="string">'result'</span>: True&#125;</div></pre></td></tr></table></figure></p>
+<h4 id="那么问题来了-打印出来的结果-我该去哪里查看"><a href="#那么问题来了-打印出来的结果-我该去哪里查看" class="headerlink" title="那么问题来了!!! 打印出来的结果,我该去哪里查看?"></a><strong><em>那么问题来了!!! 打印出来的结果,我该去哪里查看?</em></strong></h4><p>在你什么都没有做的情况下,你只能从:<br>1.你的celery日志里面可以看到, 以下是我打印出来的日志.<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">[2017-03-18 18:58:35,511: INFO/PoolWorker-2] Connected (version 2.0, client OpenSSH_5.3)</div><div class="line">[2017-03-18 18:58:35,859: INFO/PoolWorker-2] Authentication (publickey) failed.</div><div class="line">[2017-03-18 18:58:35,946: INFO/PoolWorker-2] Authentication (publickey) failed.</div><div class="line">[2017-03-18 18:58:36,078: INFO/PoolWorker-2] Authentication (password) successful!</div><div class="line">[2017-03-18 18:58:36,251: WARNING/PoolWorker-2] True</div><div class="line">[2017-03-18 18:58:36,252: WARNING/PoolWorker-2] <span class="comment">##### 标准输出 #####</span></div><div class="line">centos138</div><div class="line"><span class="comment">##### 错误输出 #####</span></div><div class="line">[2017-03-18 18:58:36,266: INFO/PoolWorker-2] Task app.vmctl.models.run_base_ssh_task[2ce5bcde-437d-4adb-be5a-74bedd5bea06] succeeded <span class="keyword">in</span> 0.8271931620001851s: &#123;<span class="string">'detail'</span>: <span class="string">'##### 标准输出 #####</span></div><div class="line">centos138</div><div class="line">##### 错误输出 #####</div><div class="line">', <span class="string">'result'</span>: True&#125;</div></pre></td></tr></table></figure></p>
 <p>2.从你所使用的消息队列(我使用的是redis)中, 通过你的<strong><em>任务ID</em></strong>来查询。</p>
 <blockquote>
 <p>疑问: 如何知道你的任务ID?<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#: 酱紫获取你的任务ID</span></div><div class="line">job = run_base_ssh_task.apply_async(args=[ip, cmd])</div><div class="line">print(<span class="string">"我的任务ID是:%s"</span> % job.id)</div></pre></td></tr></table></figure></p>
@@ -442,6 +440,22 @@
         
       
 
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/05/07/docker安装与系统配置/" rel="prev" title="docker安装与系统配置">
+                docker安装与系统配置 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
       
 
       
@@ -510,7 +524,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">1</span>
+                <span class="site-state-item-count">5</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -532,7 +546,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">2</span>
+                <span class="site-state-item-count">7</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
@@ -592,7 +606,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#方法-异步记录数据库"><span class="nav-number">1.</span> <span class="nav-text">方法:异步记录数据库</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#重载CELERY回调函数"><span class="nav-number">2.</span> <span class="nav-text">重载CELERY回调函数</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#利用celery实现异步ssh任务"><span class="nav-number">1.</span> <span class="nav-text">利用celery实现异步ssh任务</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#那么问题来了-打印出来的结果-我该去哪里查看"><span class="nav-number">1.1.</span> <span class="nav-text">那么问题来了!!! 打印出来的结果,我该去哪里查看?</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#方法-异步记录数据库"><span class="nav-number">1.2.</span> <span class="nav-text">方法:异步记录数据库</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#重载CELERY回调函数"><span class="nav-number">1.3.</span> <span class="nav-text">重载CELERY回调函数</span></a></li></ol></li></ol></div>
             
 
           </div>

@@ -1,0 +1,991 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="docker,管理命令," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.1" />
+
+
+
+
+
+
+<meta name="description" content="管理员手册1.基础 自定义docker服务的配置文件路径/etc/docker/daemon.json 12345678# 示例配置文件&amp;#123;  &quot;debug&quot;: true,  &quot;tls&quot;: true,  &quot;tlscert&quot;: &quot;/var/docker/server.pem&quot;,  &quot;tlskey&quot;: &quot;/var/docker/serverkey.pem&quot;,  &quot;hosts&quot;: &quot;tcp://">
+<meta name="keywords" content="docker,管理命令">
+<meta property="og:type" content="article">
+<meta property="og:title" content="docker管理员手册">
+<meta property="og:url" content="http://yoursite.com/2017/05/07/docker管理员手册/index.html">
+<meta property="og:site_name" content="abner&#39;s Blog">
+<meta property="og:description" content="管理员手册1.基础 自定义docker服务的配置文件路径/etc/docker/daemon.json 12345678# 示例配置文件&amp;#123;  &quot;debug&quot;: true,  &quot;tls&quot;: true,  &quot;tlscert&quot;: &quot;/var/docker/server.pem&quot;,  &quot;tlskey&quot;: &quot;/var/docker/serverkey.pem&quot;,  &quot;hosts&quot;: &quot;tcp://">
+<meta property="og:updated_time" content="2017-05-07T05:57:10.568Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="docker管理员手册">
+<meta name="twitter:description" content="管理员手册1.基础 自定义docker服务的配置文件路径/etc/docker/daemon.json 12345678# 示例配置文件&amp;#123;  &quot;debug&quot;: true,  &quot;tls&quot;: true,  &quot;tlscert&quot;: &quot;/var/docker/server.pem&quot;,  &quot;tlskey&quot;: &quot;/var/docker/serverkey.pem&quot;,  &quot;hosts&quot;: &quot;tcp://">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/05/07/docker管理员手册/"/>
+
+
+
+
+
+  <title>docker管理员手册 | abner's Blog</title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">abner's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/05/07/docker管理员手册/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="abner">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="abner's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                docker管理员手册
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-05-07T13:25:41+08:00">
+                2017-05-07
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/学习总结/" itemprop="url" rel="index">
+                    <span itemprop="name">学习总结</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/2017/05/07/docker管理员手册/" class="leancloud_visitors" data-flag-title="docker管理员手册">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数 </span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h4 id="管理员手册"><a href="#管理员手册" class="headerlink" title="管理员手册"></a>管理员手册</h4><h5 id="1-基础"><a href="#1-基础" class="headerlink" title="1.基础"></a>1.基础</h5><ul>
+<li><p>自定义docker服务的配置文件路径<code>/etc/docker/daemon.json</code></p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"># 示例配置文件</div><div class="line">&#123;</div><div class="line">  "debug": true,</div><div class="line">  "tls": true,</div><div class="line">  "tlscert": "/var/docker/server.pem",</div><div class="line">  "tlskey": "/var/docker/serverkey.pem",</div><div class="line">  "hosts": "tcp://192.168.59.3:2376"</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>查看docker日志</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">journalctl -u docker.service</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<a id="more"></a>
+<ul>
+<li><p>打开debug模式</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">vim /etc/docker/daemon.json</div><div class="line">&#123;</div><div class="line">  &quot;debug&quot;: true</div><div class="line">&#125;</div><div class="line"></div><div class="line">$ sudo kill -SIGHUP $(pidof dockerd) # reload the dockerd</div></pre></td></tr></table></figure>
+</li>
+<li><p>强制堆栈跟踪, 但是并不会退出进程. 当dockerd没有响应的时候, 强制打印堆栈日志.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ sudo kill -SIGUSR1 $(pidof dockerd)</div></pre></td></tr></table></figure>
+</li>
+<li><p>docker上的容器开机或者dockerd重启的时候, 自动启动</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"># docker run 的时候加入 --restart 参数</div><div class="line"># no - Container不重启</div><div class="line"># on-failure - container退出状态非0时重启</div><div class="line"># always - 始终重启</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<h5 id="2-container启动内存参数"><a href="#2-container启动内存参数" class="headerlink" title="2.container启动内存参数"></a>2.container启动内存参数</h5><table>
+<thead>
+<tr>
+<th>参数</th>
+<th style="text-align:center">解释</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>b, k, m, g</td>
+<td style="text-align:center">允许使用的单位</td>
+</tr>
+<tr>
+<td>-m or –memory=</td>
+<td style="text-align:center">容器所能使用的最大内存数, 允许的最小值为 4m, 默认不限制</td>
+</tr>
+<tr>
+<td>–memory-swap</td>
+<td style="text-align:center">容器所能使用的最大交换分区大小, 默认不限制</td>
+</tr>
+<tr>
+<td>–memory-swappiness</td>
+<td style="text-align:center">允许将匿名内存页, 交换出内存分区的百分比. 可设置0 - 100, 默认继承系统的设置</td>
+</tr>
+<tr>
+<td>–memory-reservation</td>
+<td style="text-align:center">允许你设置一个内存的软限制, 如果你设置了它, 它必须要小于 –memory 设置的值</td>
+</tr>
+<tr>
+<td>–kernel-memory</td>
+<td style="text-align:center">容器所能使用的最大内核内存(区别于用户内存), 默认不限制</td>
+</tr>
+<tr>
+<td>–oom-kill-disable</td>
+<td style="text-align:center">默认情况下,如果发生OOM,内核将会杀死容器中的进程. 开启这个参数,并且指定-m, 去禁用这个行为</td>
+</tr>
+</tbody>
+</table>
+<p><strong>–memory-swap</strong><br>默认为 -1 (不限制大小)<br>如果设置了–memory但是没有设置此项, 则此项默认为–memory的两倍<br>如果同时设置了–memory和–memory-swap,则(swap大小 = memory-swap设置 - memory设置)</p>
+<p><strong>–kernel-memory</strong><br><strong>无限制内存,无限制内核内存</strong>: 这是默认行为<br><strong>无限制内存,限制内核内存</strong>: 当所有的容器所需使用的内存大于宿主机的内存时,这样设置是适当的. 这会让其他需要更多内存的容器等待, 直到有足够的内存释放.<br><strong>有限的内存,无限制的内核内存</strong>: 使用有限的内存, 无限制的内核内存.<br><strong>有限的内存,有限的内核内存</strong>: 同时限制内存和内核内存,将有利于去调试那些因为内存导致的问题.如果不限制一个容器的内存和内核内存,它将在不影响其他容器和宿主机的情况下把所有内存耗尽. 否则,如果同时都加以限制, 在内核内存限制小于内存限制的时候, 内核内存溢出的情况下会引发容器内部的OOM, 如果内核内存限制大于内存限制的话, 内核限制将不会导致容器内的OOM.</p>
+<h5 id="3-container启动CPU参数"><a href="#3-container启动CPU参数" class="headerlink" title="3.container启动CPU参数"></a>3.container启动CPU参数</h5><p>默认情况下, 容器不限制CPU的使用情况. 你可以通过以下开关来限制容器使用的CPU资源.<br>大多数用户会通过默认的 <strong>CFS调度器</strong> 去配置容器的CPU使用资源</p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th style="text-align:center">解释</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>–cpus=<value\></value\></td>
+<td style="text-align:center">指定可以使用多少CPU资源, 允许使用–cpus=”1.5”这种单位.详细会在下面讲到</td>
+</tr>
+<tr>
+<td>–cpu-period=<value\></value\></td>
+<td style="text-align:center">指定调整CPU CFS调度器的重新分配周期, 默认是1秒, 期望单位为微秒, 一般不会修改此项</td>
+</tr>
+<tr>
+<td>–cpu-quota=<value\></value\></td>
+<td style="text-align:center">指定容器在CFS调度器中的权重, –cpus = cpu-quota / cpu-period</td>
+</tr>
+<tr>
+<td>–cpuset-cpus</td>
+<td style="text-align:center">指定使用哪些CPU, 0-3代表使用前4个CPU, 1,3代表使用第二和第四个CPU</td>
+</tr>
+<tr>
+<td>–cpu-shares</td>
+<td style="text-align:center">设置一个大于或者小于1024的值, 以增加或减少容器的权重, 当CPU资源不足时,进行权衡.</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>同时, Docker提供一些选型让你能改变程序的优先级. CPU调度以及优先级都是内核级别的特性, 大多数用户不需要去改变这些默认的值, 不正确的去改变这些, 将会导致你的系统不稳定,甚至崩溃.如果你了解这些, 并且想进一步设置, 可以访问 <a href="https://docs.docker.com/engine/admin/resource_constraints/#configure-the-realtime-scheduler" target="_blank" rel="external">https://docs.docker.com/engine/admin/resource_constraints/#configure-the-realtime-scheduler</a></p>
+</blockquote>
+<h5 id="4-让容器一直运行"><a href="#4-让容器一直运行" class="headerlink" title="4.让容器一直运行"></a>4.让容器一直运行</h5><p>默认情况下, 当Docker守护进程关闭了, 他会关闭所有运行的容器. 当你的Docker版本大于1.12之后, 你可以进行配置让守护进程不可用的时候, 容器依然正常运行. 这个选项将减少由于守护进程崩溃,有计划的维护或升级Docker带来的影响时间.</p>
+<blockquote>
+<p>这个选项暂时不支持Windows上的Docker, 但是支持Linux上的Windows容器.</p>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">vim /etc/docker/daemon.json</div><div class="line">&#123;</div><div class="line"><span class="string">"live-restore"</span>: <span class="literal">true</span></div><div class="line">&#125;</div><div class="line"></div><div class="line">$ sudo <span class="built_in">kill</span> -SIGHUP $(pidof dockerd) <span class="comment"># reload the dockerd</span></div></pre></td></tr></table></figure>
+<p>或者启动Docker的时候加入这个参数<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">bash $ sudo dockerd --live-restore</div></pre></td></tr></table></figure></p>
+<ul>
+<li>此在线修复的功能, 可以允许你平滑地升级你的Docker. 但是当你跨大版本升级的时候. 例如1.21.1到1.13.2版本, 守护进程可能不能修复与容器之间的链接, Docker将不能接管这些旧版本的容器. 但是也不会关闭他们. 这意味着你需要手动重启这些容器来重新接管.</li>
+<li>在线修复功能只能在配置文件不变的情况下, 如果守护进程在关闭和启动之后, 使用的不同的配置项, 这个选项将可能失效.</li>
+<li>一个长时间不在线的Docker守护进程, 会影响运行中容器. 因为容器在运行的时候会把日志写进一个 FIFO的日志队列中去, 让Docker守护进程去消费.如果Docker不能去消费这些输出, 日志队列将会填满,然后阻塞容器的日志写入, 直到有空间继续写入.默认日志队列的大小为64K.你可以重启Docker来清空这个队列.又或者更改这个队列的大小<code>/proc/sys/fs/pipe-max-size</code>.</li>
+</ul>
+<h5 id="5-HTTP-HTTPS-proxy"><a href="#5-HTTP-HTTPS-proxy" class="headerlink" title="5.HTTP/HTTPS proxy"></a>5.HTTP/HTTPS proxy</h5><p>你几乎可以通过daemon.json来配置所有的配置项, 除了HTTP proxy等特殊项.<br>比如你可以通过配置文件指定Docker存放镜像文件,容器和逻辑卷分区的目录.<br><figure class="highlight json"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">    <span class="attr">"graph"</span>: <span class="string">"/mnt/docker-data"</span>,</div><div class="line">    <span class="attr">"storage-driver"</span>: <span class="string">"overlay"</span></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>但是如果你想配置一些特殊项,比如容器的HTTP proxy配置, 你必须得这么做:<br>Docker守护进程使用<code>HTTP_PROXY</code>, <code>HTTPS_PROXY</code>,和 <code>NO_PROXY</code> 环境变量去配置HTTP代理的行为.</p>
+<p>1.创建目录<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ mkdir -p /etc/systemd/system/docker.service.d</div></pre></td></tr></table></figure></p>
+<p>2.创建对应配置文件<code>/etc/systemd/system/docker.service.d/http-proxy.conf</code><br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">[Service]</div><div class="line">Environment=<span class="string">"HTTP_PROXY=http://proxy.example.com:80/"</span></div></pre></td></tr></table></figure></p>
+<p>还有https的,如果需要的话<code>/etc/systemd/system/docker.service.d/https-proxy.conf</code><br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">[Service]</div><div class="line">Environment=<span class="string">"HTTPS_PROXY=https://proxy.example.com:443/"</span></div></pre></td></tr></table></figure></p>
+<p>3.假如你拥有一个内部私有仓库, 而你不想这些连接使用http_proxy, 可以特别指定<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">vim /etc/systemd/system/docker.service.d/http-proxy.conf</div><div class="line">Environment=<span class="string">"HTTP_PROXY=http://proxy.example.com:80/"</span> <span class="string">"NO_PROXY=localhost,127.0.0.1,docker-registry.somecorporation.com"</span></div><div class="line"></div><div class="line">vim /etc/systemd/system/docker.service.d/https-proxy.conf</div><div class="line">Environment=<span class="string">"HTTPS_PROXY=https://proxy.example.com:443/"</span> <span class="string">"NO_PROXY=localhost,127.0.0.1,docker-registry.somecorporation.com"</span></div></pre></td></tr></table></figure></p>
+<p>4.重新加载systemd配置<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ sudo systemctl daemon-reload</div></pre></td></tr></table></figure></p>
+<p>5.重启docker<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ sudo systemctl restart docker</div></pre></td></tr></table></figure></p>
+<p>6.检查<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">$ systemctl show --property=Environment docker</div><div class="line">Environment=HTTP_PROXY=http://proxy.example.com:80/</div><div class="line"><span class="comment"># 或者</span></div><div class="line">$ systemctl show --property=Environment docker</div><div class="line">Environment=HTTPS_PROXY=https://proxy.example.com:443/</div></pre></td></tr></table></figure></p>
+<h5 id="6-创建私有仓库"><a href="#6-创建私有仓库" class="headerlink" title="6.创建私有仓库"></a>6.创建私有仓库</h5><p>1.指定<code>--registry-mirror</code>来启动你docker服务<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">sudo docker --registry-mirror=http://&lt;my-docker-mirror-host&gt; <span class="_">-d</span></div><div class="line"><span class="comment">#举个栗子</span></div><div class="line">sudo docker --registry-mirror=http://10.0.0.2:5000 <span class="_">-d</span></div><div class="line"><span class="comment">#或者</span></div><div class="line">vim /etc/docker/daemon.json</div><div class="line">&#123;</div><div class="line"><span class="string">"registry-mirror"</span>: <span class="string">"http://127.0.0.1:5000"</span></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>2.启动自己的私有仓库<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">sudo docker run -p 5000:5000 \</div><div class="line">    <span class="_">-e</span> STANDALONE=<span class="literal">false</span> \</div><div class="line">    <span class="_">-e</span> MIRROR_SOURCE=https://registry-1.docker.io \</div><div class="line">    <span class="_">-e</span> MIRROR_SOURCE_INDEX=https://index.docker.io \</div><div class="line">    registry</div></pre></td></tr></table></figure></p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/docker/" rel="tag"># docker</a>
+          
+            <a href="/tags/管理命令/" rel="tag"># 管理命令</a>
+          
+        </div>
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/05/07/docker网络模式详解/" rel="next" title="docker网络模式详解">
+                <i class="fa fa-chevron-left"></i> docker网络模式详解
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/05/07/docker日志管理/" rel="prev" title="docker日志管理">
+                docker日志管理 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/logo.jpg"
+               alt="abner" />
+          <p class="site-author-name" itemprop="name">abner</p>
+           
+              <p class="site-description motion-element" itemprop="description">扎实的运维体系知识+过硬的开发技能+英语=去Google SRE部门上班,目前=None.</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">5</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">1</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">7</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://abner-w.github.io/" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              友情链接
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://qq.com/" title="腾讯" target="_blank">腾讯</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#管理员手册"><span class="nav-number">1.</span> <span class="nav-text">管理员手册</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#1-基础"><span class="nav-number">1.1.</span> <span class="nav-text">1.基础</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#2-container启动内存参数"><span class="nav-number">1.2.</span> <span class="nav-text">2.container启动内存参数</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#3-container启动CPU参数"><span class="nav-number">1.3.</span> <span class="nav-text">3.container启动CPU参数</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#4-让容器一直运行"><span class="nav-number">1.4.</span> <span class="nav-text">4.让容器一直运行</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#5-HTTP-HTTPS-proxy"><span class="nav-number">1.5.</span> <span class="nav-text">5.HTTP/HTTPS proxy</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#6-创建私有仓库"><span class="nav-number">1.6.</span> <span class="nav-text">6.创建私有仓库</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">abner</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.1"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
+  <script>AV.initialize("HC5p6mwpMQcOuIe1UvpdEMTl-gzGzoHsz", "yKJAFyHQTgowmSO4I1zkwhCw");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
